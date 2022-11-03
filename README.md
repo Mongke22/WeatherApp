@@ -7,3 +7,4 @@
 ВАЖНО. Для корректно работы нужен тариф ТЕСТОВЫЙ и выше в API яндекс погоды https://yandex.ru/dev/weather/doc/dg/concepts/pricing.html
 (Если тариф тестовый, то нужно обновлять раз в месяц. Первое обращение к API - 25.10.22)
 Формат ответа апи - https://yandex.ru/dev/weather/doc/dg/concepts/forecast-test.html#resp-format__info
+https://imgur.com/a/HY5aXqA
