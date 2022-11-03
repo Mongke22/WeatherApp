@@ -45,17 +45,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-
-                   <!-- <TextView
-                        android:id="@+id/tv_main"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:textColor="@color/primary_text_color"
-                        android:textSize="@dimen/label_text_size"
-                        android:textStyle="bold"
-                        tools:text="Weather" /> -->
-
                     <TextView
                         android:id="@+id/tv_main_description"
                         android:layout_width="match_parent"
@@ -110,9 +99,9 @@
                             android:layout_height="wrap_content"
                             android:gravity="top"
                             android:textColor="@color/secondary_text_color"
-                            android:textSize="10dp"
+                            android:textSize="@dimen/hint_text_size"
                             android:textStyle="bold"
-                            android:text="сейчас" />
+                            android:text="@string/temp_now" />
                         <TextView
                             android:id="@+id/tv_temp"
                             android:layout_width="match_parent"
@@ -184,9 +173,9 @@
                         android:layout_height="wrap_content"
                         android:gravity="end"
                         android:textColor="@color/secondary_text_color"
-                        android:textSize="10dp"
+                        android:textSize="@dimen/hint_text_size"
                         android:textStyle="bold"
-                        android:text="ночью" />
+                        android:text="@string/temp_night" />
                     <TextView
                         android:id="@+id/tv_min"
                         android:layout_width="match_parent"
@@ -206,9 +195,9 @@
                             android:layout_height="wrap_content"
                             android:gravity="end"
                             android:textColor="@color/secondary_text_color"
-                            android:textSize="10dp"
+                            android:textSize="@dimen/hint_text_size"
                             android:textStyle="bold"
-                            android:text="днём" />
+                            android:text="@string/temp_day" />
                         <TextView
                             android:id="@+id/tv_max"
                             android:layout_width="match_parent"
@@ -396,20 +385,20 @@
     </androidx.cardview.widget.CardView>
 
     <LinearLayout
-        android:layout_height="80dp"
+        android:layout_height="@dimen/date_height"
         android:layout_width="match_parent"
         android:orientation="horizontal"
-        android:paddingTop="15dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
+        android:paddingTop="@dimen/date_padding"
+        android:paddingLeft="@dimen/date_padding"
+        android:paddingRight="@dimen/date_padding"
         >
         <ImageButton
             android:id="@+id/btnDecreaseDate"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:background="@drawable/change_date_button_background_disabled"/>
-            <!--android:src="@drawable/ic_previous_date_24" />-->
+            android:background="@drawable/change_date_button_background_disabled"
+            android:contentDescription="@string/decreases_date" />
 
         <TextView
             android:id="@+id/tvCurrentDate"
@@ -417,14 +406,14 @@
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="Current date"/>
+            android:text="@string/current_date"/>
         <ImageButton
             android:id="@+id/btnIncreaseDate"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:background="@drawable/change_date_button_background"/>
-            <!--android:src="@drawable/ic_next_date_24" />-->
+            android:background="@drawable/change_date_button_background"
+            android:contentDescription="@string/increases_date" />
 
     </LinearLayout>
 
@@ -432,9 +421,8 @@
         android:id="@+id/spinnerLocationWeather"
         android:layout_width="@dimen/spinner_width"
         android:layout_height="wrap_content"
-        android:minHeight="48dp"
-        android:paddingTop="15dp"
-        android:spinnerMode="dropdown"
+        android:minHeight="@dimen/min_spinner_height"
+        android:spinnerMode="dialog"
         android:contentDescription="@string/places_spinner"
         android:layout_gravity="end"
         />

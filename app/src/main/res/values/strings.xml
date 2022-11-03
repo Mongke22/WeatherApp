@@ -7,5 +7,12 @@
     <string name="meters_per_second">м/с</string>
 
     <string name="action_refresh">Refresh</string>
-    <string name="places_spinner">Places spinner</string>\
+    <string name="places_spinner">Places spinner</string>
+    <string name="temp_now">сейчас</string>
+    <string name="temp_night">ночью</string>
+    <string name="temp_day">днём</string>
+    <string name="decreases_date">Decreases displayed date</string>
+    <string name="current_date">Current date</string>
+    <string name="increases_date">increases displayed date</string>
+    <string name="spinner_icon">spinner icon</string>\
 </resources>
