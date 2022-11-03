@@ -17,6 +17,8 @@ object Constants {
     const val CURRENT_DAY = 0
     const val NEXT_DAY = 1
     const val PREVIOUS_DAY = -1
+    const val NIGHT_HOUR = 4
+    const val DAY_HOUR = 16
 
     val conditions = mapOf("clear" to "ясно",
     "partly-cloudy" to "малооблачно",

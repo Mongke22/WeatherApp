@@ -315,16 +315,16 @@ class MainActivity : AppCompatActivity() {
             tv_name.text = weatherList.geo_object.locality.name
             tv_sunrise_time.text = weatherList.forecasts[displayDay].sunrise
             tv_sunset_time.text = weatherList.forecasts[displayDay].sunset
-            tv_speed.text = weatherList.forecasts[displayDay].hours[14].wind_speed.toString()
-            tv_min.text = weatherList.forecasts[displayDay].hours[4].temp.toString() + "°C"
-            tv_max.text = weatherList.forecasts[displayDay].hours[16].temp.toString() + "°C"
+            tv_speed.text = weatherList.forecasts[displayDay].hours[currentTimeCalendar.get(Calendar.HOUR_OF_DAY)].wind_speed.toString()
+            tv_min.text = weatherList.forecasts[displayDay].hours[Constants.NIGHT_HOUR].temp.toString() + "°C"
+            tv_max.text = weatherList.forecasts[displayDay].hours[Constants.DAY_HOUR].temp.toString() + "°C"
             tv_temp.text = weatherList.forecasts[displayDay].hours[currentTimeCalendar.get(Calendar.HOUR_OF_DAY)].temp.toString() + "°C"
-            tv_humidity.text = weatherList.forecasts[displayDay].hours[14].humidity.toString()
+            tv_humidity.text = weatherList.forecasts[displayDay].hours[currentTimeCalendar.get(Calendar.HOUR_OF_DAY)].humidity.toString()
             val conditions = weatherList.forecasts[displayDay].hours[currentTimeCalendar.get(Calendar.HOUR_OF_DAY)].condition!!.split("-and-")
-            var str: String = ""
+            var weatherDiscription: String = ""
             for(i in conditions){
-                str += Constants.conditions[i] + " "
-                tv_main_description.text = str
+                weatherDiscription += Constants.conditions[i] + " "
+                tv_main_description.text = weatherDiscription
             }
             val iconUrl = "https://yastatic.net/weather/i/icons/funky/dark/${ weatherList.forecasts[displayDay].hours[currentTimeCalendar.get(Calendar.HOUR_OF_DAY)].icon}.svg"
 
