@@ -7,7 +7,6 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
@@ -24,12 +23,10 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import com.example.mapplaces.database.DataBaseHandler
 import com.example.weatherapp.models.WeatherResponse
 import com.example.weatherapp.network.WeatherService
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
-import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYouListener
 import com.google.android.gms.location.*
 import com.google.gson.Gson
 import com.karumi.dexter.Dexter
@@ -65,16 +62,16 @@ class MainActivity : AppCompatActivity() {
 
     var list_of_items = arrayListOf("Холм-Жирковский район", "Item 2", "Item 3")
 
-    private lateinit var cal: Calendar
+    private lateinit var currentTimeCalendar: Calendar
 
     private lateinit var mSharedPreferences: SharedPreferences
 
     override fun onResume() {
-        cal = Calendar.getInstance()
+        currentTimeCalendar = Calendar.getInstance()
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         mSharedPreferences = getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE)
 
-        showSelectedDate(cal)
+        showSelectedDate(currentTimeCalendar)
         val bh = DataBaseHandler(this)
         list_of_items = bh.getPlacesList()
 
@@ -82,13 +79,13 @@ class MainActivity : AppCompatActivity() {
         spinnerLocationWeather!!.adapter = aa
 
         btnIncreaseDate.setOnClickListener {
-            changeDate(1)
+            changeDate(Constants.NEXT_DAY)
         }
         btnDecreaseDate.setOnClickListener {
-            changeDate(-1)
+            changeDate(Constants.PREVIOUS_DAY)
         }
 
-        setUpUI(0)
+        setUpUI(Constants.CURRENT_DAY)
 
         if (isLocationEnabled()) {
             checkPermissions()
@@ -100,7 +97,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
 
         onResume()
 
@@ -121,7 +117,7 @@ class MainActivity : AppCompatActivity() {
                         getLocationWeatherDetails(latitude.toDouble(),longitude.toDouble())
                     }
                 }
-                daysFromCurrent = 0
+                daysFromCurrent = Constants.CURRENT_DAY
                 changeDate(daysFromCurrent)
             }
 
@@ -210,8 +206,8 @@ class MainActivity : AppCompatActivity() {
     private val mLocationCallback = object: LocationCallback(){
         override fun onLocationResult(locationResult: LocationResult) {
             val mLastLocation: Location = locationResult.lastLocation!!
-            var latitude = mLastLocation.latitude
-            var longitude = mLastLocation.longitude
+            val latitude = mLastLocation.latitude
+            val longitude = mLastLocation.longitude
 
 
             lastLatitude = BigDecimal(latitude).setScale(3, RoundingMode.DOWN).toDouble()
@@ -255,7 +251,7 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     hideProgressDialog()
                     if(response.isSuccessful){
-                        makeToast("Connected")
+                        makeToast("Данные о погоде обновлены")
                         val weatherList: WeatherResponse? = response.body()
                         val dbHandler = DataBaseHandler(this@MainActivity)
                         dbHandler.addPlace(weatherList!!.geo_object.locality.name!!, longitude.toString(), latitude.toString())
@@ -267,7 +263,7 @@ class MainActivity : AppCompatActivity() {
                         editor.apply()
 
 
-                        setUpUI(0)
+                        setUpUI(Constants.CURRENT_DAY)
                     }else{
                         var rc = response.code()
                         when(rc){
@@ -282,13 +278,13 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onFailure(call: Call<WeatherResponse>, t: Throwable) {
                     hideProgressDialog()
-                    makeToast("not connected")
+                    makeToast("Не удалось получить данные о погоде")
                     Log.e("ERRROooRR", t.message.toString())
                 }
 
             })
         } else{
-            makeToast("No internet connection you will get previous data")
+            makeToast("Отсутствует интернет соединения, будет показана последняя доступная информация")
            // showLastData()
         }
     }
@@ -312,7 +308,7 @@ class MainActivity : AppCompatActivity() {
     private fun setUpUI(displayDay: Int){
         val weatherResponseJsonString = mSharedPreferences.getString(Constants.WEATHER_RESPONSE_DATA,"")
         if(!weatherResponseJsonString.isNullOrEmpty()){
-            if(displayDay != 0) tvTempNow.text = "В ${cal.get(Calendar.HOUR_OF_DAY)}:00"
+            if(displayDay != 0) tvTempNow.text = "В ${currentTimeCalendar.get(Calendar.HOUR_OF_DAY)}:00"
             else tvTempNow.text = "сейчас"
             val weatherList = Gson().fromJson(weatherResponseJsonString, WeatherResponse::class.java)
             tv_country.text = weatherList.geo_object.country.name
@@ -322,15 +318,15 @@ class MainActivity : AppCompatActivity() {
             tv_speed.text = weatherList.forecasts[displayDay].hours[14].wind_speed.toString()
             tv_min.text = weatherList.forecasts[displayDay].hours[4].temp.toString() + "°C"
             tv_max.text = weatherList.forecasts[displayDay].hours[16].temp.toString() + "°C"
-            tv_temp.text = weatherList.forecasts[displayDay].hours[cal.get(Calendar.HOUR_OF_DAY)].temp.toString() + "°C"
+            tv_temp.text = weatherList.forecasts[displayDay].hours[currentTimeCalendar.get(Calendar.HOUR_OF_DAY)].temp.toString() + "°C"
             tv_humidity.text = weatherList.forecasts[displayDay].hours[14].humidity.toString()
-            val conditions = weatherList.forecasts[displayDay].hours[cal.get(Calendar.HOUR_OF_DAY)].condition!!.split("-and-")
+            val conditions = weatherList.forecasts[displayDay].hours[currentTimeCalendar.get(Calendar.HOUR_OF_DAY)].condition!!.split("-and-")
             var str: String = ""
             for(i in conditions){
                 str += Constants.conditions[i] + " "
                 tv_main_description.text = str
             }
-            val iconUrl = "https://yastatic.net/weather/i/icons/funky/dark/${ weatherList.forecasts[displayDay].hours[cal.get(Calendar.HOUR_OF_DAY)].icon}.svg"
+            val iconUrl = "https://yastatic.net/weather/i/icons/funky/dark/${ weatherList.forecasts[displayDay].hours[currentTimeCalendar.get(Calendar.HOUR_OF_DAY)].icon}.svg"
 
             GlideToVectorYou.justLoadImage(this@MainActivity, Uri.parse(iconUrl), iv_main)
 
@@ -348,7 +344,7 @@ class MainActivity : AppCompatActivity() {
         var displayCalendar: Calendar = Calendar.getInstance()
         daysFromCurrent += value
         daysFromCurrent = min(daysFromCurrent,2)
-        daysFromCurrent = max(daysFromCurrent,0)
+        daysFromCurrent = daysFromCurrent.coerceAtLeast(0)
 
         when(daysFromCurrent) {
             2 -> {
@@ -378,7 +374,7 @@ class MainActivity : AppCompatActivity() {
             val editor = mSharedPreferences.edit()
             editor.putString(Constants.WEATHER_RESPONSE_DATA, weather)
             editor.apply()
-            setUpUI(0)
+            setUpUI(Constants.CURRENT_DAY)
             return true
         }
         return false
@@ -389,7 +385,7 @@ class MainActivity : AppCompatActivity() {
         val db = DataBaseHandler(this@MainActivity)
         val myFormat = "dd.MM.yyyy"
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
-        db.addWeather(weather!!.geo_object.locality.name!!,sdf.format(cal.time).toString(),Gson().toJson(weather))
+        db.addWeather(weather!!.geo_object.locality.name!!,sdf.format(currentTimeCalendar.time).toString(),Gson().toJson(weather))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -398,18 +394,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId){
+            return when(item.itemId){
             R.id.action_refresh -> {
                 updateWeatherInfo()
-                return true
+                true
             }else -> {
-                return super.onOptionsItemSelected(item)
+                super.onOptionsItemSelected(item)
             }
         }
 
     }
 
-    fun updateWeatherInfo(){
+    private fun updateWeatherInfo(){
         val weatherResponseJsonString = mSharedPreferences.getString(Constants.WEATHER_RESPONSE_DATA,"")
         val weatherList = Gson().fromJson(weatherResponseJsonString, WeatherResponse::class.java)
         getLocationWeatherDetails(BigDecimal(weatherList.info.lat).setScale(3, RoundingMode.DOWN).toDouble(),

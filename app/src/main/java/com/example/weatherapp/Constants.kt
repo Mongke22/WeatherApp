@@ -14,6 +14,9 @@ object Constants {
     const val LANG: String = "ru_RU"
     const val PREFERENCE_NAME = "WeatherAppPreference"
     const val WEATHER_RESPONSE_DATA = "WeatherResponseData"
+    const val CURRENT_DAY = 0
+    const val NEXT_DAY = 1
+    const val PREVIOUS_DAY = -1
 
     val conditions = mapOf("clear" to "ясно",
     "partly-cloudy" to "малооблачно",
